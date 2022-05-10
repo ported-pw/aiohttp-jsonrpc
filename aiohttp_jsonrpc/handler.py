@@ -88,7 +88,7 @@ class JSONRPCView(View):
             raise HTTPBadRequest
 
     async def _handle(self, json_request):
-        request_id = json_request.get("id")
+        request_id = json_request["id"]
 
         try:
             method_name = json_request["method"]
@@ -114,35 +114,25 @@ class JSONRPCView(View):
 
             result = await awaitable(method)(*args, **kwargs)
 
-            if "id" not in json_request:
-                return None
-
             return self._format_success(result, request_id)
         except Exception as e:
             return self._format_error(e, request_id)
 
     @staticmethod
     def _format_success(result, request_id):
-        data = {"jsonrpc": "2.0"}
-
-        if result is not None:
-            data["result"] = result
-        if request_id is not None:
-            data["id"] = request_id
-
-        return data
+        return {
+            "jsonrpc": "2.0",
+            "result": result,
+            "id": request_id
+        }
 
     @staticmethod
     def _format_error(exception: Exception, request_id):
-        data = {
+        return {
             "jsonrpc": "2.0",
             "error": exception,
+            "id": request_id,
         }
-
-        if request_id is not None:
-            data["id"] = request_id
-
-        return data
 
     @classmethod
     def _parse_json(cls, json_string):
