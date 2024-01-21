@@ -27,7 +27,7 @@ setup(
     zip_safe=False,
     packages=find_packages(exclude=("tests",)),
     install_requires=(
-        "aiohttp==3.6.2",
+        "aiohttp>=3.6",
     ),
     extras_require={
         "develop": [
